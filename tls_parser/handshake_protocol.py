@@ -17,6 +17,10 @@ class TlsHandshakeTypeByte(IntEnum):
     HELLO_REQUEST = 0x00
     CLIENT_HELLO = 0x01
     SERVER_HELLO = 0x02
+    NEW_SESSION_TICKET = 0x04
+    END_OF_EARLY_DATA = 0x05
+    HELLO_RETRY_REQUEST = 0x06
+    ENCRYPTED_EXTENSIONS = 0x08
     CERTIFICATE = 0x0B
     SERVER_KEY_EXCHANGE = 0x0C
     CERTIFICATE_REQUEST = 0x0D
@@ -24,6 +28,10 @@ class TlsHandshakeTypeByte(IntEnum):
     CERTIFICATE_VERIFY = 0x0F
     CLIENT_KEY_EXCHANGE = 0x10
     FINISHED = 0x14
+    CERTIFICATE_URL = 0x15
+    CERTIFICATE_STATUS = 0x16
+    KEY_UPDATE = 0x18
+    NEXT_PROTOCOL = 0x43
 
 
 class TlsHandshakeMessage(TlsSubprotocolMessage):
