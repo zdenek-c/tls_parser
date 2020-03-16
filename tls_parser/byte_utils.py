@@ -14,4 +14,4 @@ def int_to_bytes(i: int, expected_length: Optional[int] = None) -> bytes:
         pad_length = expected_length - bytes_length
         hex_value = "0"*2*pad_length + hex_value
 
-    return codecs.decode(hex_value, "hex_codec")
+    return codecs.decode(hex_value.encode('ascii'), "hex_codec")
