@@ -10,10 +10,11 @@ from tls_parser.tls_version import TlsVersionEnum
 
 
 class TlsRecordTlsVersionBytes(Enum):
-    SSLV3 = b"\x03\x00"
-    TLSV1 = b"\x03\x01"
-    TLSV1_1 = b"\x03\x02"
-    TLSV1_2 = b"\x03\x03"
+    SSLv3 = b"\x03\x00"
+    TLSv1 = b"\x03\x01"
+    TLSv1_1 = b"\x03\x02"
+    TLSv1_2 = b"\x03\x03"
+    TLSv1_3 = b"\x03\x04"
 
 
 class TlsRecordTypeByte(IntEnum):

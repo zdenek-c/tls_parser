@@ -10,5 +10,5 @@ from tls_parser.tls_version import TlsVersionEnum
 class TlsHeartbeatRequestRecordTestCase(unittest.TestCase):
 
     def test_to_bytes(self):
-        record = TlsHeartbeatRequestRecord.from_parameters(TlsVersionEnum.TLSV1_2, b'123456')
+        record = TlsHeartbeatRequestRecord.from_parameters(TlsVersionEnum.TLSv1_2, b'123456')
         self.assertTrue(record.to_bytes())

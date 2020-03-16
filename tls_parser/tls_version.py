@@ -2,7 +2,8 @@ from enum import Enum
 
 
 class TlsVersionEnum(Enum):
-    SSLV3 = 0
-    TLSV1 = 1
-    TLSV1_1 = 2
-    TLSV1_2 = 3
+    SSLv3 = 0
+    TLSv1 = 1
+    TLSv1_1 = 2
+    TLSv1_2 = 3
+    TLSv1_3 = 4
