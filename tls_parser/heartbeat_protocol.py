@@ -1,11 +1,12 @@
-from __future__ import absolute_import
-from __future__ import print_function
-
 import struct
 from enum import IntEnum
-from tls_parser.record_protocol import TlsSubprotocolMessage, TlsRecord, TlsRecordHeader, TlsRecordTypeByte
-from tls_parser.tls_version import TlsVersionEnum
 from typing import Tuple
+
+from tls_parser.record_protocol import TlsRecord
+from tls_parser.record_protocol import TlsRecordHeader
+from tls_parser.record_protocol import TlsRecordTypeByte
+from tls_parser.record_protocol import TlsSubprotocolMessage
+from tls_parser.tls_version import TlsVersionEnum
 
 
 class TlsHeartbeatTypeByte(IntEnum):
@@ -15,27 +16,27 @@ class TlsHeartbeatTypeByte(IntEnum):
 
 class TlsHeartbeatMessage(TlsSubprotocolMessage):
 
-    def __init__(self, hearbeat_type, heartbeat_data):
-        # type: (TlsHeartbeatTypeByte, bytes) -> None
+    def __init__(
+            self,
+            hearbeat_type: TlsHeartbeatTypeByte,
+            heartbeat_data: bytes) -> None:
         self.type = hearbeat_type
         self.data = heartbeat_data
 
     @classmethod
-    def from_bytes(cls, raw_bytes):
-        # type: (bytes) -> Tuple[TlsHeartbeatMessage, int]
+    def from_bytes(cls, raw_bytes: bytes) -> Tuple["TlsHeartbeatMessage", int]:
         raise NotImplementedError()
 
-    def to_bytes(self):
-        # type: () -> bytes
-        bytes = b''
+    def to_bytes(self) -> bytes:
+        bytes_array = b''
         # Heartbeat message type - 1 byte
-        bytes += struct.pack('B', self.type.value)
+        bytes_array += struct.pack('B', self.type.value)
         # Heartbeat message length - 2 bytes
-        bytes += struct.pack('!H', len(self.data))
+        bytes_array += struct.pack('!H', len(self.data))
         # Heartbead message data
-        bytes += self.data
+        bytes_array += self.data
         # Padding is not handled
-        return bytes
+        return bytes_array
 
 
 class TlsHeartbeatRequestRecord(TlsRecord):
@@ -48,18 +49,24 @@ class TlsHeartbeatRequestRecord(TlsRecord):
     } HeartbeatMessage;
     """
 
-    def __init__(self, record_header, heartbeat_message):
-        # type: (TlsRecordHeader, TlsHeartbeatMessage) -> None
-        super(TlsHeartbeatRequestRecord, self).__init__(record_header, [heartbeat_message])
+    def __init__(
+            self,
+            record_header: TlsRecordHeader,
+            heartbeat_message: TlsHeartbeatMessage) -> None:
+        super(TlsHeartbeatRequestRecord, self).__init__(
+            record_header, [heartbeat_message])
 
     @classmethod
-    def from_parameters(cls, tls_version, heartbeat_data):
-        # type: (TlsVersionEnum, bytes) -> TlsHeartbeatRequestRecord
-        message = TlsHeartbeatMessage(TlsHeartbeatTypeByte.REQUEST, heartbeat_data)
-        record_header = TlsRecordHeader(TlsRecordTypeByte.HEARTBEAT, tls_version, message.size)
+    def from_parameters(
+            cls,
+            tls_version: TlsVersionEnum,
+            heartbeat_data: bytes) -> "TlsHeartbeatRequestRecord":
+        message = TlsHeartbeatMessage(
+            TlsHeartbeatTypeByte.REQUEST, heartbeat_data)
+        record_header = TlsRecordHeader(
+            TlsRecordTypeByte.HEARTBEAT, tls_version, message.size)
         return TlsHeartbeatRequestRecord(record_header, message)
 
     @classmethod
-    def from_bytes(cls, raw_bytes):
-        # type: (bytes) -> Tuple[TlsHeartbeatRequestRecord, int]
+    def from_bytes(cls, raw_bytes: bytes) -> Tuple["TlsHeartbeatRequestRecord", int]:
         raise NotImplementedError()
