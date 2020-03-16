@@ -28,15 +28,15 @@ class TlsHeartbeatMessage(TlsSubprotocolMessage):
         raise NotImplementedError()
 
     def to_bytes(self) -> bytes:
-        bytes_array = b''
+        byte_array = b''
         # Heartbeat message type - 1 byte
-        bytes_array += struct.pack('B', self.type.value)
+        byte_array += struct.pack('B', self.type.value)
         # Heartbeat message length - 2 bytes
-        bytes_array += struct.pack('!H', len(self.data))
+        byte_array += struct.pack('!H', len(self.data))
         # Heartbead message data
-        bytes_array += self.data
+        byte_array += self.data
         # Padding is not handled
-        return bytes_array
+        return byte_array
 
 
 class TlsHeartbeatRequestRecord(TlsRecord):

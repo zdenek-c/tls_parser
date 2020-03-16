@@ -88,11 +88,11 @@ class TlsRecord(object):
         return TlsRecord(record_header, [message]), len_consumed + record_header.length
 
     def to_bytes(self) -> bytes:
-        bytes_array = b""
-        bytes_array += self.header.to_bytes()
+        byte_array = b""
+        byte_array += self.header.to_bytes()
         for message in self.subprotocol_messages:
-            bytes_array += message.to_bytes()
-        return bytes_array
+            byte_array += message.to_bytes()
+        return byte_array
 
 
 class TlsSubprotocolMessage(object):

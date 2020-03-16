@@ -38,10 +38,10 @@ class TlsAlertMessage(TlsSubprotocolMessage):
         return TlsAlertMessage(alert_severity, alert_description), 2
 
     def to_bytes(self) -> bytes:
-        bytes_array = b""
-        bytes_array += struct.pack("B", self.alert_severity.value)
-        bytes_array += struct.pack("B", self.alert_description)
-        return bytes_array
+        byte_array = b""
+        byte_array += struct.pack("B", self.alert_severity.value)
+        byte_array += struct.pack("B", self.alert_description)
+        return byte_array
 
 
 class TlsAlertRecord(TlsRecord):

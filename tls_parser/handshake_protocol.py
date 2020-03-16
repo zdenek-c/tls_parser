@@ -52,16 +52,16 @@ class TlsHandshakeMessage(TlsSubprotocolMessage):
         return TlsHandshakeMessage(handshake_type, message), 4 + message_length
 
     def to_bytes(self) -> bytes:
-        bytes_array = b""
+        byte_array = b""
         # TLS Handshake type - 1 byte
-        bytes_array += struct.pack("B", self.handshake_type.value)
+        byte_array += struct.pack("B", self.handshake_type.value)
         # TLS Handshake length - 3 bytes
-        bytes_array += struct.pack("!I", len(self.handshake_data))[
+        byte_array += struct.pack("!I", len(self.handshake_data))[
             1:4
         ]  # We only keep the first 3 out of 4 bytes
         # TLS Handshake message
-        bytes_array += self.handshake_data
-        return bytes_array
+        byte_array += self.handshake_data
+        return byte_array
 
 
 class TlsHandshakeRecord(TlsRecord):
