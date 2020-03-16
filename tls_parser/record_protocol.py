@@ -46,14 +46,14 @@ class TlsRecordHeader(object):
         return TlsRecordHeader(record_type, TlsVersionEnum[tls_version.name], record_length), 5
 
     def to_bytes(self) -> bytes:
-        bytes = b""
+        byte_array = b""
         # TLS Record type - 1 byte
-        bytes += struct.pack("B", self.type.value)
+        byte_array += struct.pack("B", self.type.value)
         # TLS version - 2 bytes
-        bytes += TlsRecordTlsVersionBytes[self.tls_version.name].value
+        byte_array += TlsRecordTlsVersionBytes[self.tls_version.name].value
         # Length - 2 bytes
-        bytes += struct.pack("!H", self.length)
-        return bytes
+        byte_array += struct.pack("!H", self.length)
+        return byte_array
 
 
 class TlsRecord(object):
