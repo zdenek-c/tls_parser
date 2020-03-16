@@ -3,8 +3,7 @@ from typing import Optional
 
 
 # TODO(AD): Once we drop support for Python 2, use int.to_bytes() instead?
-def int_to_bytes(i, expected_length=None):
-    # type: (int, Optional[int]) -> bytes
+def int_to_bytes(i: int, expected_length: Optional[int] = None) -> bytes:
     hex_value = "{0:x}".format(i)
     # Make length of hex_value a multiple of two
     hex_value = "0" * (len(hex_value) % 2) + hex_value
