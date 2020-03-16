@@ -1,19 +1,19 @@
-from __future__ import absolute_import
-from __future__ import print_function
-
 import struct
 from enum import Enum
 from enum import IntEnum
-from tls_parser.exceptions import NotEnoughData, UnknownTypeByte
+from typing import List
+from typing import Tuple
+
+from tls_parser.exceptions import NotEnoughData
+from tls_parser.exceptions import UnknownTypeByte
 from tls_parser.tls_version import TlsVersionEnum
-from typing import Tuple, List
 
 
 class TlsRecordTlsVersionBytes(Enum):
-    SSLV3 = b'\x03\x00'
-    TLSV1 = b'\x03\x01'
-    TLSV1_1 = b'\x03\x02'
-    TLSV1_2 = b'\x03\x03'
+    SSLV3 = b"\x03\x00"
+    TLSV1 = b"\x03\x01"
+    TLSV1_1 = b"\x03\x02"
+    TLSV1_2 = b"\x03\x03"
 
 
 class TlsRecordTypeByte(IntEnum):
@@ -25,50 +25,54 @@ class TlsRecordTypeByte(IntEnum):
 
 
 class TlsRecordHeader(object):
-    def __init__(self, record_type, tls_version, record_length):
-        # type: (TlsRecordTypeByte, TlsVersionEnum, int) -> None
+    def __init__(
+            self,
+            record_type: TlsRecordTypeByte,
+            tls_version: TlsVersionEnum,
+            record_length: int) -> None:
         self.type = record_type
         self.tls_version = tls_version
         self.length = record_length
 
     @classmethod
-    def from_bytes(cls, raw_bytes):
-        # type: (bytes) -> Tuple[TlsRecordHeader, int]
+    def from_bytes(cls, raw_bytes: bytes) -> Tuple["TlsRecordHeader", int]:
         if len(raw_bytes) < 5:
             raise NotEnoughData()
 
-        record_type = TlsRecordTypeByte(struct.unpack('B', raw_bytes[0:1])[0])
+        record_type = TlsRecordTypeByte(struct.unpack("B", raw_bytes[0:1])[0])
         tls_version = TlsRecordTlsVersionBytes(raw_bytes[1:3])
-        record_length = struct.unpack('!H', raw_bytes[3:5])[0]
+        record_length = struct.unpack("!H", raw_bytes[3:5])[0]
         return TlsRecordHeader(record_type, TlsVersionEnum[tls_version.name], record_length), 5
 
-    def to_bytes(self):
-        # type: () -> bytes
-        bytes = b''
+    def to_bytes(self) -> bytes:
+        bytes = b""
         # TLS Record type - 1 byte
-        bytes += struct.pack('B', self.type.value)
+        bytes += struct.pack("B", self.type.value)
         # TLS version - 2 bytes
         bytes += TlsRecordTlsVersionBytes[self.tls_version.name].value
         # Length - 2 bytes
-        bytes += struct.pack('!H', self.length)
+        bytes += struct.pack("!H", self.length)
         return bytes
 
 
 class TlsRecord(object):
-    def __init__(self, record_header, subprotocol_messages):
-        # type: (TlsRecordHeader, List[TlsSubprotocolMessage]) -> None
+    def __init__(
+            self,
+            record_header: TlsRecordHeader,
+            subprotocol_messages: List["TlsSubprotocolMessage"]) -> None:
         self.header = record_header
 
-        # Several messages can be concatenated into a single record; the messages must belong to the same subprotocol
+        # Several messages can be concatenated into a single record;
+        # the messages must belong to the same subprotocol
         # Hence, in practice this only seems to apply to the handshake protocol
         if self.header.type != TlsRecordTypeByte.HANDSHAKE and len(subprotocol_messages) != 1:
-            raise ValueError('Received multiple subprotocol messages for a non-handshake record')
+            raise ValueError(
+                "Received multiple subprotocol messages for a non-handshake record")
 
         self.subprotocol_messages = subprotocol_messages
 
     @classmethod
-    def from_bytes(cls, raw_bytes):
-        # type: (bytes) -> Tuple[TlsRecord, int]
+    def from_bytes(cls, raw_bytes: bytes) -> Tuple["TlsRecord", int]:
         record_header, len_consumed = TlsRecordHeader.from_bytes(raw_bytes)
 
         # Try to parse the record
@@ -83,27 +87,23 @@ class TlsRecord(object):
         message = TlsSubprotocolMessage(record_data)
         return TlsRecord(record_header, [message]), len_consumed + record_header.length
 
-    def to_bytes(self):
-        # type: () -> bytes
-        bytes = b''
-        bytes += self.header.to_bytes()
+    def to_bytes(self) -> bytes:
+        bytes_array = b""
+        bytes_array += self.header.to_bytes()
         for message in self.subprotocol_messages:
-            bytes += message.to_bytes()
-        return bytes
+            bytes_array += message.to_bytes()
+        return bytes_array
 
 
 class TlsSubprotocolMessage(object):
     # Handshake, Alert, etc.
 
-    def __init__(self, message_data):
-        # type: (bytes) -> None
+    def __init__(self, message_data: bytes) -> None:
         self.message_data = message_data
 
-    def to_bytes(self):
-        # type: () -> bytes
+    def to_bytes(self) -> bytes:
         return self.message_data
 
     @property
-    def size(self):
-        # type: () -> int
+    def size(self) -> int:
         return len(self.to_bytes())
